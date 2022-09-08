@@ -1,27 +1,49 @@
 pipeline {
-    agent any
-   environment {
-        ENV_URL = 'env.pipeline.com'
-   }
+    agent { label 'java' } 
     stages {
-        stage('Stage one') {
-            steps {
-                echo "Hello World"
+        stage('Parallel Stages') {
+            parallel {
+            stage('One') {
+                steps {
+                    sh "sleep 3"
+                    sh "curl ifconfig.co"
+                }
             }
-        }
-
-        stage('Stage two') {
-            steps {
-                echo "Hello Cloud"
+            stage('Two') {
+                steps {
+                    sh "sleep 4"
+                }
             }
-        }
-
-        stage('Stage three') {
-            steps {
-                sh "echo ENV_URL = ${ENV_URL}"
-
-            } 
+            stage('Three') {
+                steps {
+                    sh "sleep 5"
+                }
+            }
         }
     }
+        stage('Four') {
+            steps {
+                sh "sleep 1"
+            }
+        }
+        stage('Sowmya') {
+            steps {
+                sh "sleep 1"
+            }
+        }
+    }
+post {
+    aborted {
+        sh "echo Job was aborted"
+    }
+
+    success {
+        sh "echo Job Completed Successfully"
+    }
+
+    failure {
+       cleanWs()
+    }
+  }
 }
 
